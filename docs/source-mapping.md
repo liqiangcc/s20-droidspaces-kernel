@@ -243,6 +243,62 @@ No candidate tree was assembled and no build was run. This triangulation does
 not turn the reconstructed candidate into an exact Samsung release, so Gate 1
 remains blocked under the repository's exact-match rule.
 
+### Experimental reconstruction artifact
+
+After the owner instructed the work to continue with the explicitly described
+experimental reconstruction route, a candidate archive was assembled for
+static analysis only:
+
+```text
+D:\codex-source-analysis\s20-20260823\candidate\
+  SM-G9810_X1Q_CHN_HXJ2_RECONSTRUCTED_Kernel.tar.gz
+size=212189708 bytes
+SHA256=a66cae75d49016be8e3129329ef0d265409546901ff11ab58fd984bf6db51fa5
+```
+
+`scripts/assemble-source-candidate.py` reproduces the artifact from the three
+checksummed Samsung kernel archives. It performs exactly these transformations
+on the KOR IXJ1 x1q base:
+
+- removes the KOR defconfig and two KOR x1q overlays;
+- replaces `arch/arm64/Kconfig.projects` with Samsung's HK x1q China version;
+- adds Samsung's HK x1q China defconfig and six China overlays;
+- replaces the five common runtime files whose China versions are independently
+  identical in the HK x1q and CHN HXJ2 y2q packages;
+- embeds `CANDIDATE_PROVENANCE.md` with source archive hashes and limitations.
+
+Archive-level verification against the KOR base produced exactly the expected
+change set:
+
+```text
+candidate entries=70952
+common entries=70944
+identical common entries=70938
+changed common entries=6
+KOR-only entries removed=3
+candidate-only entries added=8 (including provenance)
+unexpected differences=0
+```
+
+`scripts/check-kconfig-coverage.py` statically checked every `Kconfig*` entry in
+the candidate against all 5,805 observed stock symbols:
+
+```text
+candidate defined symbols=18277
+missing stock symbols=16
+enabled missing stock symbols=0
+```
+
+All 16 missing symbols are disabled selectors for other regions/models. No
+kernel configuration or compilation command was run. The inherited Samsung
+`build_kernel.sh` still names the KOR defconfig and is deliberately documented
+inside the artifact as **not executable for this candidate**.
+
+This artifact demonstrates that a mechanically reproducible candidate can be
+formed; it does not resolve the older provenance of the x1q China DTS. Exact
+Gate 1 remains `BLOCKED`, and entering Gate 2 still requires an explicit owner
+decision to accept this residual risk.
+
 ## Source package record
 
 | Item | Result |

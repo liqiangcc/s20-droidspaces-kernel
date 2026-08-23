@@ -186,3 +186,66 @@ A traceable experimental source candidate could be assembled from:
 This candidate was not assembled or compiled during this gate. Its China x1q
 DTS provenance remains older than the phone firmware, so it cannot be labeled
 an exact Samsung stock source release.
+
+## Reconstructed candidate artifact
+
+The owner subsequently instructed the experimental reconstruction route to
+continue. The candidate was assembled without configuring or compiling the
+kernel:
+
+```text
+path: D:\codex-source-analysis\s20-20260823\candidate\SM-G9810_X1Q_CHN_HXJ2_RECONSTRUCTED_Kernel.tar.gz
+size: 212189708 bytes
+SHA256: a66cae75d49016be8e3129329ef0d265409546901ff11ab58fd984bf6db51fa5
+entries: 70952
+```
+
+Reproduction tool:
+
+```text
+scripts/assemble-source-candidate.py
+```
+
+Independent candidate-vs-KOR archive comparison:
+
+```text
+common entries=70944
+identical common entries=70938
+changed common entries=6
+only KOR=3
+only candidate=8
+unexpected differences=0
+```
+
+The six replacements are exactly:
+
+```text
+arch/arm64/Kconfig.projects
+drivers/gpu/drm/drm_edid.c
+drivers/usb/gadget/function/f_ss_mon_gadget.c
+include/linux/ologk.h
+techpack/display/msm/dp/dp_display.c
+techpack/display/msm/dp/secdp.h
+```
+
+The three removed entries are the KOR defconfig and r13/r14 KOR overlays. The
+eight additions are the HK x1q China defconfig, six China overlays, and the
+embedded provenance document.
+
+Static candidate coverage command/result:
+
+```text
+python scripts/check-kconfig-coverage.py <candidate.tar.gz> evidence/stock.config
+
+defined symbols=18277
+stock config symbols=5805
+missing symbols=16
+active missing symbols=0
+```
+
+The 16 missing symbols are all explicitly disabled selectors for other Samsung
+regions/models. The artifact's `CANDIDATE_PROVENANCE.md` also warns that the
+inherited KOR `build_kernel.sh` names a removed KOR defconfig and must not be
+executed.
+
+No `make`, compiler, kernel build, boot image, or flashing command was executed.
