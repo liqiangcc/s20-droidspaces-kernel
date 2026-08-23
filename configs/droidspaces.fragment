@@ -1,0 +1,14 @@
+# Minimal known gaps observed on the SM-G9810 stock kernel.
+# This fragment is NOT the complete DroidSpaces non-GKI requirement set.
+# Before building, compare the final resolved .config with the current
+# DroidSpaces Kernel-Configuration.md requirements.
+
+CONFIG_NAMESPACES=y
+CONFIG_PID_NS=y
+CONFIG_IPC_NS=y
+CONFIG_UTS_NS=y
+CONFIG_NET_NS=y
+
+# Desired for fuller container/network functionality.
+CONFIG_USER_NS=y
+CONFIG_VETH=y
