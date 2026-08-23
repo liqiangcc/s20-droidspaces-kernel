@@ -27,6 +27,9 @@ CHN_COMMON_PATHS = (
     "drivers/gpu/drm/drm_edid.c",
     "drivers/usb/gadget/function/f_ss_mon_gadget.c",
     "include/linux/ologk.h",
+    "include/uapi/linux/netfilter/xt_dscp.h",
+    "include/uapi/linux/netfilter/xt_mark.h",
+    "net/netfilter/xt_dscp.c",
     "techpack/display/msm/dp/dp_display.c",
     "techpack/display/msm/dp/secdp.h",
 )

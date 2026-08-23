@@ -1,47 +1,39 @@
 # Codex Work Handoff
 
-## Immediate next task
+## Current state
 
-Complete **Gate 0 and Gate 1 only**. Do not compile yet.
+- Gate 0: complete from the real SM-G9810/x1q device.
+- Gate 1: formally `BLOCKED`; no exact SM-G9810 `G9810ZCSBHXJ2` Samsung OSRC
+  package has been identified.
+- Experimental Gate 2: owner-authorized reconstructed-source stock build
+  succeeded twice with identical same-output-tree hashes. Formal Gate 2 is not
+  passed because clean-tree signing-key reproducibility and Gate 1 remain
+  unresolved. See `evidence/gate2-stock-baseline.md`.
+- Gate 3 and all packaging/flashing work: not started and not authorized.
 
-### Gate 0 — capture the exact device baseline
+The current reconstructed source archive is:
 
-Collect from the real phone:
-
-```sh
-adb shell getprop ro.product.model
-adb shell getprop ro.product.device
-adb shell getprop ro.build.display.id
-adb shell getprop ro.build.version.incremental
-adb shell getprop ro.bootloader
-adb shell uname -a
-adb shell su -c 'zcat /proc/config.gz' > stock.config
-sha256sum stock.config
+```text
+SM-G9810_X1Q_CHN_HXJ2_RECONSTRUCTED_v3_Kernel.tar.gz
+SHA256=b8f997f84ef48d38b3d4ca1e848eb099be261ffd084c459f188ed482d8bf4dc7
 ```
 
-Update `docs/device-baseline.md` with the exact outputs and preserve `stock.config` as evidence if it is safe to commit.
+The authoritative build tree must be on a case-sensitive Linux filesystem.
+NTFS/DrvFS collapsed required pairs such as `xt_DSCP.c` and `xt_dscp.c`.
 
-### Gate 1 — source mapping
+## Stop point
 
-Using the exact device/firmware values:
+Stop after documenting, committing, and pushing the experimental Gate 2
+result. Do not create or unpack `boot.img`, repack any partition image, run
+Odin/Heimdall, or write to a block device.
 
-1. locate the matching SM-G9810 release in Samsung Open Source Release Center;
-2. download/checksum the source archive;
-3. identify the kernel build README;
-4. identify the exact device defconfig;
-5. identify the toolchain required by Samsung's build instructions;
-6. update `docs/source-mapping.md` with evidence and exact identifiers.
+Formal progression to Gate 3 requires a separate owner decision after review
+of these risks:
 
-Do not substitute a Korean `x1q` defconfig or a third-party KernelSU kernel unless it is used only as a documented secondary reference.
-
-## Stop condition
-
-After Gate 0 and Gate 1 are complete, stop and report:
-
-- exact firmware/source match;
-- defconfig path;
-- toolchain versions;
-- unresolved risks/mismatches;
-- exact proposed stock-baseline build command.
-
-Do **not** start Gate 2 until the source mapping is reviewed.
+- exact firmware/source mapping remains unresolved;
+- the available Clang is 10.0.9 while stock reports 10.0.6;
+- x1q China DTS provenance is from the older official HK package;
+- Samsung internal `secgetspf` metadata and the Android-tree `perflog.h` input
+  are unavailable;
+- a verified stock boot backup and recovery path is mandatory before any
+  future flash candidate can be considered.

@@ -299,6 +299,33 @@ formed; it does not resolve the older provenance of the x1q China DTS. Exact
 Gate 1 remains `BLOCKED`, and entering Gate 2 still requires an explicit owner
 decision to accept this residual risk.
 
+### Owner-authorized experimental Gate 2 follow-up
+
+The owner subsequently accepted that residual risk and explicitly instructed
+an experimental stock-baseline build. This does **not** change formal Gate 1:
+Samsung still has not published an identified exact SM-G9810 HXJ2 package.
+
+The current reproducible candidate is v3:
+
+```text
+SM-G9810_X1Q_CHN_HXJ2_RECONSTRUCTED_v3_Kernel.tar.gz
+size=212190213 bytes
+SHA256=b8f997f84ef48d38b3d4ca1e848eb099be261ffd084c459f188ed482d8bf4dc7
+entries=70952
+```
+
+The build had to use a WSL ext4 source tree. A normal NTFS/DrvFS directory is
+case-insensitive and collapses Linux netfilter pairs such as `xt_DSCP.c` and
+`xt_dscp.c`, producing misleading missing-source errors. Direct archive-level
+comparison confirmed that the lowercase netfilter members are present in the
+Samsung tar archives.
+
+The experimental source compiles through CFP/FIPS and produces
+`arch/arm64/boot/Image` using the captured stock config. Full build evidence,
+toolchain hashes, output hashes, and remaining risks are recorded in
+`evidence/gate2-stock-baseline.md`. A compile success is not evidence that the
+older HK-derived x1q China DTS is safe on this phone.
+
 ## Source package record
 
 | Item | Result |

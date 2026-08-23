@@ -249,3 +249,34 @@ inherited KOR `build_kernel.sh` names a removed KOR defconfig and must not be
 executed.
 
 No `make`, compiler, kernel build, boot image, or flashing command was executed.
+
+## Post-Gate-1 candidate revision
+
+After the owner authorized an experimental Gate 2 build, the assembly recipe
+was revised to v3:
+
+```text
+path: D:\codex-source-analysis\s20-20260823\candidate\SM-G9810_X1Q_CHN_HXJ2_RECONSTRUCTED_v3_Kernel.tar.gz
+size: 212190213 bytes
+SHA256: b8f997f84ef48d38b3d4ca1e848eb099be261ffd084c459f188ed482d8bf4dc7
+entries: 70952
+```
+
+The recipe now explicitly takes the lowercase netfilter match files from the
+CHN archive. Direct tar comparison shows those exact members are byte-identical
+to the KOR members, so candidate-vs-KOR totals remain:
+
+```text
+common entries=70944
+identical common entries=70938
+changed common entries=6
+only KOR=3
+only candidate=8
+```
+
+This revision was prompted by a filesystem finding, not a source-code delta:
+the first NTFS/DrvFS extraction collapsed case-distinct pairs such as
+`xt_DSCP.c`/`xt_dscp.c`. The authoritative build extraction was moved to WSL
+ext4, where both files coexist. Subsequent build evidence is separated in
+`evidence/gate2-stock-baseline.md`; the earlier paragraph above accurately
+describes what had and had not been executed at the time of Gate 1 capture.

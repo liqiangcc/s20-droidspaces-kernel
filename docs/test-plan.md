@@ -2,6 +2,21 @@
 
 The project uses explicit gates. A later gate must not be started when an earlier gate is unresolved.
 
+## Current execution status (2026-08-24)
+
+```text
+Gate 0 = complete
+Gate 1 = BLOCKED (exact Samsung SM-G9810 HXJ2 source not identified)
+Experimental Gate 2 = owner-authorized reconstructed-source build succeeded
+                      twice with identical same-tree hashes
+Formal Gate 2 = BLOCKED (Gate 1 plus clean-tree signing-key reproducibility)
+Gate 3+ = not started
+```
+
+The experimental Gate 2 evidence is in
+`evidence/gate2-stock-baseline.md`. No boot-image or device-write operation was
+performed.
+
 ## Gate 0 — Recovery baseline
 
 Before flashing any experimental image:
