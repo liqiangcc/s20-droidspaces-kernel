@@ -150,6 +150,67 @@ The namespace subset and `CONFIG_WLAN_REGION_CODE=300` agree with stock, and
 both configs record Clang 10.0.6, but those common values do not override the
 x1q/y2q device mismatch. Gate 1 remains blocked.
 
+## Official SM-G981N x1q archive inspection
+
+The package selected from Samsung OSRC's `G981NKSS6IXJ1` result was downloaded:
+
+```text
+package: SM-G981N_KOR_13_Opensource.zip
+size: 253046595 bytes
+SHA256: 4deff23b76547dfa8d7f0ae8e0579d329e2851b2781bbe7a7be521830aa51884
+ZIP full-read: OK (4 entries, 255914793 uncompressed bytes)
+```
+
+The filename itself does not contain the firmware identifier. The package-to-
+version association is therefore based on the OSRC result selected for the
+download. Kernel archive timestamps are 2024-10-14, independently placing the
+source one day before the connected phone's 2024-10-15 kernel build.
+
+Directly observed package identity:
+
+```text
+kernel paths: 76056
+defconfig: arch/arm64/configs/vendor/x1q_kor_singlex_defconfig
+x1q DTS: arch/arm64/boot/dts/samsung/x1q/
+README defconfig: vendor/x1q_kor_singlex_defconfig
+kernel version: 4.19.113
+compiler path: toolchain/llvm-arm-toolchain-ship/10.0/bin/clang
+CLANG_TRIPLE: aarch64-linux-gnu-
+output: arch/arm64/boot/Image
+```
+
+Stock-vs-KOR parsed comparison:
+
+```text
+stock_symbols=5805
+KOR_symbols=5809
+changed_common=5
+stock_only=10
+KOR_only=14
+
+CONFIG_MACH_X1Q_CHN_OPEN: stock=y; KOR=<not set>
+CONFIG_MACH_X1Q_KOR_SINGLE: stock=<not set>; KOR=y
+CONFIG_MPTCP: stock=<not set>; KOR=y
+CONFIG_SUPPORT_MCC_THRESHOLD_CHANGE: stock=<not set>; KOR=y
+CONFIG_WLAN_REGION_CODE: stock=300; KOR=200
+```
+
+Selected KOR-vs-G9860-CHN common-source SHA256 comparison:
+
+```text
+Makefile: identical
+kernel/fork.c: identical
+kernel/nsproxy.c: identical
+ipc/namespace.c: identical
+net/core/net_namespace.c: identical
+drivers/android/binder.c: identical
+security/selinux/hooks.c: identical
+```
+
+This is the closest first-party x1q source found so far, but it remains a
+different regional model/release and contains no x1q China-open defconfig.
+Gate 1 therefore remains blocked under the project's exact-match rule.
+
 ## Auxiliary source tree inspection
 
 Repository:

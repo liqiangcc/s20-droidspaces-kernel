@@ -129,6 +129,65 @@ Consequently, direct package inspection disproves the hypothesis that this
 archive includes the missing SM-G9810/x1q China-open defconfig. It remains
 useful for same-release toolchain corroboration but cannot unblock Gate 1.
 
+### Direct inspection of the official SM-G981N x1q package
+
+The OSRC package selected from the `G981NKSS6IXJ1` result was downloaded and
+fully read without ZIP errors. The outer filename does not embed the release
+identifier, so the association with `G981NKSS6IXJ1` comes from the selected
+OSRC result; the archive's 2024-10-14 timestamps independently corroborate that
+generation. This is one day before the phone's 2024-10-15 stock-kernel build.
+
+| Item | Observed value |
+|---|---|
+| Package | `SM-G981N_KOR_13_Opensource.zip` |
+| Selected OSRC version | `G981NKSS6IXJ1` |
+| File size | `253046595` bytes |
+| SHA256 | `4deff23b76547dfa8d7f0ae8e0579d329e2851b2781bbe7a7be521830aa51884` |
+| ZIP full-read result | OK; 4 entries, 255914793 uncompressed bytes |
+| Kernel README | top-level `README_Kernel.txt` |
+| Kernel version | `4.19.113` |
+| Defconfig | `arch/arm64/configs/vendor/x1q_kor_singlex_defconfig` |
+| x1q DTS | `arch/arm64/boot/dts/samsung/x1q/` |
+| Output | `arch/arm64/boot/Image` |
+
+The KOR defconfig is structurally very close to the captured stock config:
+
+```text
+stock symbols=5805
+KOR symbols=5809
+changed common symbols=5
+stock-only symbols=10 (all explicit disabled SEC project selectors)
+KOR-only symbols=14 (MPTCP detail plus MST/MFC charger selections)
+```
+
+The five common-symbol differences are:
+
+```text
+CONFIG_MACH_X1Q_CHN_OPEN: stock=y; KOR=not set
+CONFIG_MACH_X1Q_KOR_SINGLE: stock=not set; KOR=y
+CONFIG_MPTCP: stock=not set; KOR=y
+CONFIG_SUPPORT_MCC_THRESHOLD_CHANGE: stock=not set; KOR=y
+CONFIG_WLAN_REGION_CODE: stock=300; KOR=200
+```
+
+To test whether this is the same broad source generation as the exact-suffix
+SM-G9860 package, SHA256 hashes were compared for selected critical common
+files. All seven were byte-identical between the KOR x1q and CHN y2q packages:
+
+```text
+Makefile
+kernel/fork.c
+kernel/nsproxy.c
+ipc/namespace.c
+net/core/net_namespace.c
+drivers/android/binder.c
+security/selinux/hooks.c
+```
+
+This makes the SM-G981N package the strongest available first-party x1q source
+candidate. It still does not establish an exact firmware/region match: its
+README and defconfig select Korea, while the phone selects x1q China-open.
+
 ## Source package record
 
 | Item | Result |
@@ -318,7 +377,9 @@ Before Gate 2, a Samsung OSRC package explicitly released for `SM-G9810` and
 `G9810ZCSBHXJ2`, or another authoritative Samsung package that actually
 contains the matching x1q China-open source and defconfig, must be obtained and
 reviewed. The inspected `SM-G9860_CHN_13_Opensource.zip` cannot satisfy this
-condition because it contains only y2q device paths and configuration.
+condition because it contains only y2q device paths and configuration. The
+inspected SM-G981N package supplies current-generation x1q source but only a
+Korean defconfig, so it narrows the uncertainty without removing it.
 
 The selected archive must then be checksummed and its `README*`, `build*.sh`,
 top-level `Makefile`, `arch/arm64/configs/*`, and related vendor config files must
