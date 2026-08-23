@@ -95,13 +95,47 @@ make this useful investigative evidence, but the model is `SM-G9860`, not
 inside Samsung's archive showing that its kernel drop and x1q China-open
 defconfig are shared with `SM-G9810`.
 
+### Direct inspection of the official SM-G9860 package
+
+The official sibling package was subsequently downloaded and fully read without
+ZIP errors:
+
+| Item | Observed value |
+|---|---|
+| Package | `SM-G9860_CHN_13_Opensource.zip` |
+| OSRC version | `G9860ZCSBHXJ2` |
+| OSRC upload identifier | `12985` |
+| File size | `254544062` bytes |
+| SHA256 | `d3595efa1f00a60768958b1fbc95703c954cb3997f11b1ca66ef318a7734c87c` |
+| Kernel README | top-level `README_Kernel.txt` |
+| Kernel archive | top-level `Kernel.tar.gz` |
+| Kernel version | `4.19.113` |
+| Defconfig | `arch/arm64/configs/vendor/y2q_chn_openx_defconfig` |
+| Output | `arch/arm64/boot/Image` |
+
+The kernel archive contains 76,067 paths, zero of which contain `x1q`. Its only
+vendor defconfig is `y2q_chn_openx_defconfig`, and its Samsung DTS directory is
+`arch/arm64/boot/dts/samsung/y2q`. The README build command also explicitly
+selects `vendor/y2q_chn_openx_defconfig`.
+
+The decisive machine-selector difference is:
+
+```text
+stock SM-G9810: CONFIG_MACH_X1Q_CHN_OPEN=y
+G9860 package:  CONFIG_MACH_Y2Q_CHN_OPEN=y
+```
+
+Consequently, direct package inspection disproves the hypothesis that this
+archive includes the missing SM-G9810/x1q China-open defconfig. It remains
+useful for same-release toolchain corroboration but cannot unblock Gate 1.
+
 ## Source package record
 
 | Item | Result |
 |---|---|
 | Exact Samsung source package | **Not identified** |
 | Exact release identifier/URL | OSRC exact-firmware query returns zero results |
-| Exact source package SHA256 | Not available; no exact package exists in the observed OSRC results and no archive was downloaded |
+| Exact source package SHA256 | Not available; the downloaded sibling package SHA256 is `d3595efa1f00a60768958b1fbc95703c954cb3997f11b1ca66ef318a7734c87c` but it is not the exact model |
 | Exact kernel source version | Not verified from a matching Samsung archive |
 | Exact Samsung build README path | Not verified |
 | Exact SM-G9810/x1q defconfig path | **Not verified** |
@@ -186,6 +220,26 @@ enabled.
 
 ## Toolchain metadata
 
+### Official same-release sibling package
+
+`README_Kernel.txt` and the top-level `Makefile` in Samsung's downloaded
+SM-G9860 package directly specify/corroborate:
+
+```text
+ARCH=arm64
+CROSS_COMPILE=<android platform>/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+REAL_CC=toolchain/llvm-arm-toolchain-ship/10.0/bin/clang
+CLANG_TRIPLE=aarch64-linux-gnu-
+DTC_EXT=tools/dtc
+CONFIG_BUILD_ARM64_DT_OVERLAY=y
+O=out
+output=arch/arm64/boot/Image
+```
+
+This is first-party evidence for the `G9860ZCSBHXJ2` sibling release and agrees
+with the running kernel's Clang 10.0.6 metadata. It still does not prove that
+the unavailable SM-G9810 release used an identical toolchain archive/revision.
+
 ### Directly observed from the stock config
 
 ```text
@@ -260,13 +314,11 @@ device.
 
 ## Required evidence to unblock Gate 1
 
-One of the following must be obtained and reviewed before Gate 2:
-
-1. a Samsung OSRC package explicitly released for `SM-G9810` and
-   `G9810ZCSBHXJ2`; or
-2. authoritative Samsung package contents/documentation proving that
-   `SM-G9860_CHN_13_Opensource.zip` is the shared kernel drop for the
-   `SM-G9810` China-open firmware, including an x1q China-open defconfig.
+Before Gate 2, a Samsung OSRC package explicitly released for `SM-G9810` and
+`G9810ZCSBHXJ2`, or another authoritative Samsung package that actually
+contains the matching x1q China-open source and defconfig, must be obtained and
+reviewed. The inspected `SM-G9860_CHN_13_Opensource.zip` cannot satisfy this
+condition because it contains only y2q device paths and configuration.
 
 The selected archive must then be checksummed and its `README*`, `build*.sh`,
 top-level `Makefile`, `arch/arm64/configs/*`, and related vendor config files must
