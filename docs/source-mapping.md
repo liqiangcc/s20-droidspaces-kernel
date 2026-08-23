@@ -188,6 +188,61 @@ This makes the SM-G981N package the strongest available first-party x1q source
 candidate. It still does not establish an exact firmware/region match: its
 README and defconfig select Korea, while the phone selects x1q China-open.
 
+### Full three-package convergence analysis
+
+The three original `Kernel.tar.gz` archives were compared without extraction
+using `scripts/compare-source-archives.py`. The script hashes every regular
+file and compares link metadata, avoiding Windows path and symlink limitations.
+Full command results and path classifications are recorded in
+`evidence/source-archive-comparison.md`.
+
+| Comparison | Common entries | Byte-identical | Changed common | Only first | Only second |
+|---|---:|---:|---:|---:|---:|
+| KOR IXJ1 x1q vs CHN HXJ2 y2q | 70,943 | 70,935 | 8 | 4 | 15 |
+| KOR IXJ1 x1q vs HK HWH9 x1q | 70,944 | 70,900 | 44 | 3 | 7 |
+
+Of the eight KOR-vs-CHN common-file differences, three are expected project,
+DTS-directory, and build-script selectors. The remaining five are small
+regional implementation differences in DisplayPort/HDR, Samsung USB monitoring,
+and olog headers. The namespace, IPC, Binder, and SELinux sources are identical.
+
+Three-way classification found 70,898 entries identical in all packages. After
+excluding files absent because of device packaging:
+
+- 37 common files use the same newer content in KOR IXJ1 and CHN HXJ2 but older
+  content in HK HWH9; this is strong evidence of a shared 2024 source generation;
+- five common runtime files use the same China-region content in HK HWH9 and
+  CHN HXJ2 but different KOR content;
+- the x1q China DTS and defconfig exist only in the older HK archive;
+- `arch/arm64/Kconfig.projects` and `build_kernel.sh` differ in all three and
+  must be selected for the target project rather than copied blindly.
+
+Static Kconfig parsing found 18,276 symbols defined by the KOR tree. Of the
+5,805 symbols in `stock.config`, 17 lacked a direct definition in that regional
+tree, but only one was enabled: `CONFIG_MACH_X1Q_CHN_OPEN=y`. Replacing the KOR
+project Kconfig with Samsung's HK x1q China project Kconfig resolves every
+enabled stock symbol. The 15 remaining unmatched symbols are all disabled
+selectors for other Samsung projects.
+
+The KOR and HK x1q r13/r14 DTS overlays are also close: each comparison has two
+added and six removed lines, covering the regional model string, one regulator
+flag, and proximity-sensor thresholds. This is useful provenance, not proof
+that the 2023 HK DTS is the exact 2024 China-open DTS.
+
+These results establish a defensible **reconstructed experimental candidate**:
+
+```text
+base: current-generation SM-G981N KOR x1q source
+generation updates: corroborated by SM-G9860 CHN HXJ2
+China regional common files: versions shared by HK x1q and CHN HXJ2
+x1q China project Kconfig/DTS provenance: official SM-G9810 HK archive
+configuration anchor: captured stock.config
+```
+
+No candidate tree was assembled and no build was run. This triangulation does
+not turn the reconstructed candidate into an exact Samsung release, so Gate 1
+remains blocked under the repository's exact-match rule.
+
 ## Source package record
 
 | Item | Result |

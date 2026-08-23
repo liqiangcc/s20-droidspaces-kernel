@@ -211,6 +211,12 @@ This is the closest first-party x1q source found so far, but it remains a
 different regional model/release and contains no x1q China-open defconfig.
 Gate 1 therefore remains blocked under the project's exact-match rule.
 
+The complete archive-level and Kconfig convergence evidence is recorded in:
+
+```text
+evidence/source-archive-comparison.md
+```
+
 ## Auxiliary source tree inspection
 
 Repository:
