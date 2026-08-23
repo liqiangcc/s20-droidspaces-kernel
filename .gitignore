@@ -1,0 +1,26 @@
+# Build output
+out/
+build/
+artifacts/
+
+# Kernel/boot images and recovery binaries
+*.img
+*.bin
+*.tar
+*.tar.md5
+*.lz4
+
+# Downloaded firmware/source archives
+*.zip
+*.7z
+*.xz
+*.gz
+
+# Local evidence that may contain device-specific/private data
+recovery/
+local/
+
+# Editor/OS
+.DS_Store
+.vscode/
+.idea/
